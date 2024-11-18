@@ -67,8 +67,39 @@ describe("nginx config tests", () => {
       message: "response from /wp-json/custom/v1",
       data: {
         attribute: "value",
-        url: `https://wp.some-domain.com/wp-json/custom/v1`,
+        url: `https://www.some-domain.com/wp-json/custom/v1`,
       },
     });
+  });
+
+  it("should not rewrite input values and placeholders in admin", async () => {
+    const response = await fetch(`${ADMIN_URL}`);
+    const html = await response.text();
+
+    // check input attributes not rewritten
+    expect(html).toContain('placeholder="https://www.some-domain.com/example"');
+    expect(html).toContain('value="https://www.some-domain.com/page"');
+    expect(html).toContain(
+      'defaultValue="https://www.some-domain.com/default"'
+    );
+  });
+
+  it("should preserve www urls in form submissions", async () => {
+    const formData = new FormData();
+    formData.append("redirect_to", "https://www.some-domain.com/dashboard");
+    formData.append("site_url", "https://www.some-domain.com");
+
+    const response = await fetch(`${ADMIN_URL}post.php`, {
+      method: "POST",
+      body: formData,
+    });
+
+    const responseData = await response.json();
+
+    // check form data urls not rewritten
+    expect(responseData.redirect_to).toBe(
+      "https://www.some-domain.com/dashboard"
+    );
+    expect(responseData.site_url).toBe("https://www.some-domain.com");
   });
 });

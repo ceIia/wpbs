@@ -1,7 +1,7 @@
 import { serve } from "bun";
 
 serve({
-  fetch(req) {
+  async fetch(req) {
     const url = new URL(req.url);
 
     // serve wp assets
@@ -20,12 +20,26 @@ serve({
         message: `response from ${url.pathname}`,
         data: {
           attribute: "value",
-          url: `https://wp.some-domain.com${url.pathname}`,
+          url: `https://www.some-domain.com${url.pathname}`,
         },
       });
       return new Response(jsonResponse, {
         headers: { "Content-Type": "application/json" },
       });
+    }
+
+    // handle admin form submission
+    if (url.pathname === "/wp-admin/post.php" && req.method === "POST") {
+      const formData = await req.formData();
+      return new Response(
+        JSON.stringify({
+          redirect_to: formData.get("redirect_to"),
+          site_url: formData.get("site_url"),
+        }),
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      );
     }
 
     // serve admin area
@@ -42,6 +56,13 @@ serve({
         <body>
           <a href="https://www.some-domain.com/wp-admin/">admin dashboard</a>
           <img src="https://www.some-domain.com/wp-content/uploads/logo.png" />
+          <form>
+            <input type="text" 
+              placeholder="https://www.some-domain.com/example"
+              value="https://www.some-domain.com/page"
+              defaultValue="https://www.some-domain.com/default"
+            />
+          </form>
         </body>
       </html>`,
         {
