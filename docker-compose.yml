@@ -1,0 +1,20 @@
+version: "3.8"
+
+services:
+  proxy:
+    build: .
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/usr/local/openresty/nginx/conf/nginx.conf:ro
+    depends_on:
+      - app
+
+  app:
+    image: oven/bun:latest
+    working_dir: /app
+    volumes:
+      - .:/app
+    command: ["bun", "run", "server.ts"]
+    ports:
+      - "8080:8080"
