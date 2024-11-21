@@ -1,4 +1,5 @@
 import { serve } from "bun";
+import outdent from "outdent";
 
 serve({
   async fetch(req) {
@@ -31,7 +32,8 @@ serve({
     // handle page with buttons
     if (url.pathname === "/page-with-buttons") {
       return new Response(
-        `<html>
+        outdent`
+        <html>
           <body>
             <button href="https://www.some-domain.com/action">Click me</button>
             <button data-href="https://www.some-domain.com/data">Data action</button>
@@ -46,7 +48,8 @@ serve({
     // handle page with custom components
     if (url.pathname === "/page-with-components") {
       return new Response(
-        `<html>
+        outdent`
+        <html>
           <body>
             <ppn-cta
               call-text="Click here to visit www.some-domain.com"
@@ -69,7 +72,8 @@ serve({
       url.searchParams.has("action")
     ) {
       return new Response(
-        `<html>
+        outdent`
+        <html>
           <body>
             <div id="editor">
               <div class="wp-block-group">
@@ -114,7 +118,8 @@ serve({
       url.pathname === "/wp-login.php"
     ) {
       return new Response(
-        `<html>
+        outdent`
+        <html>
           <head>
             <title>wp-admin</title>
             <meta property="og:image" content="https://www.some-domain.com/wp-content/meta.png" />
@@ -147,7 +152,8 @@ serve({
 
     // serve frontend
     return new Response(
-      `<html>
+      outdent`
+      <html>
         <head>
           <title>frontend</title>
           <link rel="canonical" href="https://www.some-domain.com/page" />

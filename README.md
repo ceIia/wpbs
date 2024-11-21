@@ -71,6 +71,7 @@ curl wp.some-domain.com/page-with-components
 - `test.ts` - where the magic breaks
 - `nginx.conf` - where regexes go to die
 - `docker-compose.yml` / `Dockerfile` - keeps the chaos contained (kinda)
+- `get-results.sh` - generates markdown results for each route
 
 sources:
 
