@@ -196,7 +196,7 @@ describe("URL handling in HTML elements", () => {
   });
 });
 
-describe("URL handling in WYSIWYG contexts", () => {
+describe("URL handling in WYSIWYG contexts ", () => {
   it("should preserve www URLs when loading page editor content", async () => {
     const response = await fetch(`${ADMIN_URL}/post.php?post=123&action=edit`);
     const html = await response.text();
