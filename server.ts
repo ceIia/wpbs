@@ -1,10 +1,8 @@
 import { serve } from "bun";
 import outdent from "outdent";
-
 serve({
   async fetch(req) {
     const url = new URL(req.url);
-
     // serve wp assets
     if (
       url.pathname.startsWith("/wp-content") ||
@@ -14,7 +12,6 @@ serve({
         headers: { "Content-Type": "text/plain" },
       });
     }
-
     // handle wp-json api
     if (url.pathname.startsWith("/wp-json/")) {
       const jsonResponse = JSON.stringify({
@@ -28,7 +25,6 @@ serve({
         headers: { "Content-Type": "application/json" },
       });
     }
-
     // handle page with buttons
     if (url.pathname === "/page-with-buttons") {
       return new Response(
@@ -44,7 +40,6 @@ serve({
         }
       );
     }
-
     // handle page with custom components
     if (url.pathname === "/page-with-components") {
       return new Response(
@@ -65,7 +60,6 @@ serve({
         }
       );
     }
-
     // handle page editor
     if (
       url.pathname === "/wp-admin/post.php" &&
@@ -74,6 +68,23 @@ serve({
       return new Response(
         outdent`
         <html>
+          <head>
+           <script type="text/javascript">
+              var ajaxurl = 'https://www.some-domain.com/wp-admin/admin-ajax.php';
+              var import_action = 'edit';           
+              var wp_all_import_security = '4d19cc65bf';
+            </script>
+            <script id="wp-api-fetch-js-after">
+              wp.apiFetch.use( wp.apiFetch.createRootURLMiddleware( "https://www.some-domain.com/wp-json/" ) );
+              wp.apiFetch.nonceMiddleware = wp.apiFetch.createNonceMiddleware( "06d8c10ee9" );
+              wp.apiFetch.use( wp.apiFetch.nonceMiddleware );
+              wp.apiFetch.use( wp.apiFetch.mediaUploadMiddleware );
+              wp.apiFetch.nonceEndpoint = "https://www.some-domain.com/wp-admin/admin-ajax.php?action=rest-nonce";
+            </script>
+            <script id="vaa_view_admin_as_script-js-extra">
+              var VAA_View_Admin_As = {"ajaxurl":"https:\/\/www.some-domain.com\/wp-admin\/admin-ajax.php","siteurl":"https:\/\/www.some-domain.com","settings":{"view_types":[]},"settings_user":{"admin_menu_location":"top-secondary","disable_super_admin":true,"force_group_users":false,"force_ajax_users":false,"freeze_locale":false,"hide_customizer":false,"hide_front":false,"view_mode":"browse"},"view":[],"view_types":["role","user","caps","locale","visitor"],"_debug":"","_vaa_nonce":"383f435332","__no_users_found":"No users found.","__key_already_exists":"Key already exists.","__success":"Success","__confirm":"Are you sure?","__download":"Download"};
+            </script>
+          </head>
           <body>
             <div id="editor">
               <div class="wp-block-group">
@@ -92,7 +103,6 @@ serve({
         }
       );
     }
-
     // handle admin form submission (update to handle meta box content)
     if (url.pathname === "/wp-admin/post.php" && req.method === "POST") {
       const formData = await req.formData();
@@ -100,18 +110,15 @@ serve({
         redirect_to: formData.get("redirect_to"),
         site_url: formData.get("site_url"),
       };
-
       // Handle meta box content if present
       const metaContent = formData.get("meta_content") as string;
       if (metaContent) {
         response.meta_content = JSON.parse(metaContent);
       }
-
       return new Response(JSON.stringify(response), {
         headers: { "Content-Type": "application/json" },
       });
     }
-
     // serve admin area
     if (
       url.pathname.startsWith("/wp-admin") ||
@@ -149,7 +156,6 @@ serve({
         }
       );
     }
-
     // serve frontend
     return new Response(
       outdent`
